@@ -1,4 +1,7 @@
-uebersicht_nowplaying
+Now Playing
 =====================
 
-A clean widget for Übersicht to show the currently track in iTunes or Spotify
+A clean widget for [Übersicht](http://tracesof.net/uebersicht) to show the current track in iTunes or Spotify
+
+## Screenshot
+![Current song widget for Übersicht](./screenshot.png)
