@@ -105,5 +105,7 @@ update: (output, domEl) ->
                     ).fail(() ->
                         $(domEl).find('.artwork').hide()
                     )
+                else
+                    $(domEl).find('.artwork').hide()
             else
                 $(domEl).find('.artwork').hide()
