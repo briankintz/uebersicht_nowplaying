@@ -1,17 +1,10 @@
--- Brian Kintz
--- 23.12.2014
-
 tell application "System Events"
 	if exists process "Spotify" then
 		tell application "Spotify"
 			if player state is playing then
 				set t to current track
 				
-				if player position is less than 3 then
-					my setCurrentAlbumArtwork(artwork of t)
-				end if
-				
-				return my buildMetadataString(name of t, artist of t, album of t, duration of t, player position, true)
+				return my buildMetadataString("spotify", name of t, artist of t, album of t, duration of t, player position, id of t)
 			end if
 		end tell
 	end if
@@ -23,7 +16,6 @@ tell application "System Events"
 				
 				try
 					set a to data of artwork 1 of t
-					set hasArtwork to true
 					
 					if player position is less than 3 then
 						my setCurrentAlbumArtwork(a)
@@ -32,7 +24,7 @@ tell application "System Events"
 					set hasArtwork to false
 				end try
 				
-				return my buildMetadataString(name of t, artist of t, album of t, duration of t, player position, hasArtwork)
+				return my buildMetadataString("itunes", name of t, artist of t, album of t, duration of t, player position, persistent ID of t)
 			end if
 		end tell
 	end if
@@ -40,9 +32,10 @@ tell application "System Events"
 	return "Not Playing"
 end tell
 
-on buildMetadataString(title, artist, album, duration, position, hasArtwork)
+on buildMetadataString(player, title, artist, album, duration, position, trackId)
 	set progress to (100 * position / duration) as integer
-	return title & "~~" & artist & "~~" & album & "~~" & progress & "~~" & hasArtwork
+	
+	return "{ \"player\": \"" & player & "\", \"title\": \"" & title & "\", \"artist\": \"" & artist & "\", \"album\": \"" & album & "\", \"progress\": " & progress & ", \"trackId\": \"" & trackId & "\" }"
 end buildMetadataString
 
 on setCurrentAlbumArtwork(artwork)
