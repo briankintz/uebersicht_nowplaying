@@ -19,7 +19,7 @@ style: """
         border-radius: 10px
 
     .artwork, .metadata
-        display: inline
+        display: inline-block
 
     .artwork
         float: left
@@ -47,6 +47,9 @@ style: """
         height: 2px
         margin-top: 3px
         background: rgba(#FFF, 0.6)
+
+    .trackId
+        display: none
 """
 
 render: (_) -> """
@@ -58,30 +61,49 @@ render: (_) -> """
             <div class="album"></div>
         </div>
         <div class="progress"></div>
+        <div class="trackId"></div>
     </div>
 """
 
 update: (output, domEl) ->
-  if output.trim() == "Not Playing"
-    $(domEl).fadeOut 500
+    if output.trim() == "Not Playing"
+        $(domEl).fadeOut 500
+    else
+        $(domEl).fadeIn 500
 
-  else
-    $(domEl).fadeIn 500
+        # { title, artist, album, progress, trackId }
+        data = $.parseJSON(output)
 
-    previousTitle = $(domEl).find('.title').html()
-
-    # { title, artist, album, progress, hasArtwork }
-    values = output.split("~~")
-
-    $(domEl).find('.progress').css width: values[3]+'%'
-
-    if previousTitle != values[0]
-        $(domEl).find('.title').html(values[0])
-        $(domEl).find('.artist').html(values[1])
-        $(domEl).find('.album').html(values[2])
-
-        if values[4].trim() == "true"
-            $(domEl).find('.artwork').show().attr('src', 'nowplaying.widget/artwork.tiff')
+        if (data.progress > 0 and data.progress <= 100)
+            # reset padding in case the last song's progress didn't work (currently true for Spotify)
+            if (data.progress < 3)
+                $(domEl).find('.artwork, .metadata').css "padding-top": "0"
+            $(domEl).find('.progress').css width: "#{data.progress}%"
         else
-            $(domEl).find('.artwork').hide()
+            $(domEl).find('.artwork, .metadata').css "padding-top": "2px"
+            $(domEl).find('.progress').css width: "0%"
 
+
+        previousId = $(domEl).find('.trackId').text()
+        if previousId != data.trackId
+            $(domEl).find('.trackId').text(data.trackId)
+
+            $(domEl).find('.title').text(data.title)
+            $(domEl).find('.artist').text(data.artist)
+            $(domEl).find('.album').text(data.album)
+
+            if data.player == "itunes"
+                $(domEl).find('.artwork').show().attr('src', 'nowplaying.widget/artwork.tiff')
+
+            else if data.player == "spotify"
+                parts = data.trackId.split(":")
+
+                # try to get artwork from the Spotify web API
+                if (parts[1] == "track")
+                    $.get("https://api.spotify.com/v1/tracks/#{parts[2]}", (data) ->
+                        $(domEl).find('.artwork').show().attr('src', data.album.images[2].url)
+                    ).fail(() ->
+                        $(domEl).find('.artwork').hide()
+                    )
+            else
+                $(domEl).find('.artwork').hide()
