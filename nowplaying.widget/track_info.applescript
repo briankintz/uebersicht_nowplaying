@@ -4,7 +4,7 @@ tell application "System Events"
 			if player state is playing then
 				set t to current track
 				
-				return my buildMetadataString("spotify", name of t, artist of t, album of t, duration of t, player position, id of t)
+				return my buildMetadataString("spotify", name of t, artist of t, album of t, (duration of t) / 1000, player position, id of t)
 			end if
 		end tell
 	end if
