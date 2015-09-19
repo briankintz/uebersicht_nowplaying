@@ -68,8 +68,14 @@ render: (_) -> """
 update: (output, domEl) ->
     if output.trim() == "Not Playing"
         $(domEl).fadeOut 500
+        $(domEl).data('playing', false)
     else
         $(domEl).fadeIn 500
+
+        if !$(domEl).data('playing')
+            artwork = $(domEl).find('.artwork')
+            artwork.attr('src', artwork.attr('src') + '?' + new Date().getTime())
+            $(domEl).data('playing', true)
 
         # { title, artist, album, progress, trackId }
         data = $.parseJSON(output)
