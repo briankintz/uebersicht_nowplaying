@@ -74,8 +74,8 @@ update: (output, domEl) ->
         # { title, artist, album, progress, trackId }
         data = $.parseJSON(output)
 
-        if (data.progress > 0 and data.progress <= 100)
-            # reset padding in case the last song's progress didn't work (currently true for Spotify)
+        if (data.progress >= 0 and data.progress <= 100)
+            # reset padding in case the last song's progress wasn't available (Spotify)
             if (data.progress < 3)
                 $(domEl).find('.artwork, .metadata').css "padding-top": "0"
             $(domEl).find('.progress').css width: "#{data.progress}%"
