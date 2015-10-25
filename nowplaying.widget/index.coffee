@@ -25,6 +25,9 @@ style: """
         float: left
         margin-right: 10px
 
+    .metadata
+	    max-width: 325px
+
     .title, .artist, .album
         height: 16px
         position: relative
